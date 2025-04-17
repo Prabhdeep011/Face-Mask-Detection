@@ -20,7 +20,7 @@ except Exception as e:
 
 # Alarm setup
 pygame.mixer.init()
-alarm_path = "/Users/prabhdeepsingh/Desktop/prabh/alarm.mp3"
+alarm_path = "alarm.mp3"
 pygame.mixer.music.load(alarm_path)
 
 # -------------------------- Live Detection --------------------------
