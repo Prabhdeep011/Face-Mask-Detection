@@ -11,7 +11,7 @@ st.title("😷 Face Mask Detection System")
 mode = st.radio("Choose Detection Mode", ["Live Detection", "Test Image (Upload/Capture)"], horizontal=True)
 
 # Load YOLOv8 model
-model_path = "/Users/prabhdeepsingh/Desktop/prabh/Python Files/runs/detect/train/weights/best.pt"
+model_path = "best.pt"
 try:
     model = YOLO(model_path)
 except Exception as e:
