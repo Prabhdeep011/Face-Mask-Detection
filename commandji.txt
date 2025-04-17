@@ -1,0 +1,10 @@
+yolo detect predict model="/Users/prabhdeepsingh/Desktop/prabh/Python Files/runs/detect/train/weights/best.pt" source=0 show=True  
+
+
+
+
+
+
+# Activate your virtual environment (if not already)
+source /Users/prabhdeepsingh/Desktop/prabh/.venv/bin/activate
+

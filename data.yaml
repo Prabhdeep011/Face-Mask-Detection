@@ -1,0 +1,7 @@
+path: C:/Users/shiva/OneDrive/Desktop/prabh/Dataset/SplitData
+train: train/images
+val: val/images
+test: test/images
+
+nc: 2
+names: ['With Mask', 'Without Mask']
