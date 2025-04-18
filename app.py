@@ -2,31 +2,16 @@ import streamlit as st
 import cv2
 import numpy as np
 from ultralytics import YOLO
-from PIL import Image
+import pygame
 import os
-
-# Alarm function
-def play_alarm():
-    IS_CLOUD = os.environ.get("STREAMLIT_SERVER_HEADLESS", "1") == "1"
-    if not IS_CLOUD:
-        try:
-            import pygame
-            pygame.mixer.init()
-            pygame.mixer.music.load("alarm.mp3")
-            if not pygame.mixer.music.get_busy():
-                pygame.mixer.music.play()
-        except Exception as e:
-            st.warning(f"Audio playback error: {e}")
-    else:
-        st.warning("🚨 Person without mask detected!")
-        with st.expander("🔊 Play alarm manually"):
-            audio_file = open("alarm.mp3", "rb")
-            audio_bytes = audio_file.read()
-            st.audio(audio_bytes, format='audio/mp3')
+from PIL import Image
 
 # Title and mode selection
 st.title("😷 Face Mask Detection System")
 mode = st.radio("Choose Detection Mode", ["Live Detection", "Test Image (Upload/Capture)"], horizontal=True)
+
+# Check if running on Streamlit Cloud
+IS_CLOUD = os.environ.get("STREAMLIT_SERVER_HEADLESS", "1") == "1"
 
 # Load YOLOv8 model
 model_path = "best.pt"
@@ -36,6 +21,27 @@ except Exception as e:
     st.error(f"Failed to load YOLO model: {e}")
     st.stop()
 
+# Alarm setup
+def play_alarm():
+    if not IS_CLOUD:
+        try:
+            pygame.mixer.init()
+            pygame.mixer.music.load("alarm.mp3")
+            pygame.mixer.music.play()
+        except Exception as e:
+            st.warning(f"Alarm Error: {e}")
+    else:
+        st.warning("🚨 Person without mask detected!")
+        with st.expander("🔊 Play alarm manually"):
+            audio_file = open("alarm.mp3", "rb")
+            audio_bytes = audio_file.read()
+            st.audio(audio_bytes, format='audio/mp3')
+
+def stop_alarm():
+    if not IS_CLOUD:
+        pygame.mixer.music.stop()
+        pygame.mixer.quit()
+
 # -------------------------- Live Detection --------------------------
 if mode == "Live Detection":
     st.subheader("🔴 Live Webcam Feed with Mask Detection")
@@ -44,6 +50,10 @@ if mode == "Live Detection":
     alarm_toggle = st.checkbox("Enable Alarm", value=True)
 
     if start and not stop:
+        if IS_CLOUD:
+            st.error("Live webcam access is not supported on Streamlit Cloud. Please run locally.")
+            st.stop()
+
         cap = cv2.VideoCapture(0)
         if not cap.isOpened():
             st.error("Webcam could not be accessed.")
@@ -51,7 +61,7 @@ if mode == "Live Detection":
 
         frame_holder = st.empty()
 
-        while True:
+        while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
                 break
@@ -82,6 +92,8 @@ if mode == "Live Detection":
 
             if alert and alarm_toggle:
                 play_alarm()
+            else:
+                stop_alarm()
 
             cv2.putText(frame, "Please wear a mask and stay safe!", (10, frame.shape[0] - 20),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
@@ -93,6 +105,7 @@ if mode == "Live Detection":
                 break
 
         cap.release()
+        stop_alarm()
         st.success("Live detection stopped.")
 
 # ---------------------- Image Test / Upload -----------------------
@@ -101,21 +114,23 @@ elif mode == "Test Image (Upload/Capture)":
 
     uploaded_image = st.file_uploader("Upload an Image", type=["jpg", "jpeg", "png"])
     capture = st.button("📷 Open Webcam to Capture")
-
     captured_image = None
 
     if capture:
-        cap = cv2.VideoCapture(0)
-        ret, frame = cap.read()
-        cap.release()
-
-        if ret:
-            st.image(frame, caption="Preview - Press Capture", channels="BGR")
-            if st.button("✅ Capture This Image"):
-                captured_image = frame
-                st.success("Image captured successfully.")
+        if IS_CLOUD:
+            st.error("Webcam capture is not supported on Streamlit Cloud.")
         else:
-            st.error("Failed to capture from webcam.")
+            cap = cv2.VideoCapture(0)
+            ret, frame = cap.read()
+            cap.release()
+
+            if ret:
+                st.image(frame, caption="Preview - Press Capture", channels="BGR")
+                if st.button("✅ Capture This Image"):
+                    captured_image = frame
+                    st.success("Image captured successfully.")
+            else:
+                st.error("Failed to capture from webcam.")
 
     image_input = None
     if uploaded_image:
@@ -131,7 +146,6 @@ elif mode == "Test Image (Upload/Capture)":
         confs = boxes.conf.cpu().tolist()
 
         mask_count, no_mask_count = 0, 0
-        alert = False
 
         for box, cls, conf in zip(boxes.xyxy, classes, confs):
             x1, y1, x2, y2 = map(int, box)
@@ -142,7 +156,6 @@ elif mode == "Test Image (Upload/Capture)":
                 mask_count += 1
             else:
                 no_mask_count += 1
-                alert = True
 
             cv2.rectangle(image_input, (x1, y1), (x2, y2), color, 2)
             cv2.putText(image_input, f"{label} ({conf * 100:.1f}%)", (x1, y1 - 10),
@@ -153,9 +166,6 @@ elif mode == "Test Image (Upload/Capture)":
 
         image_rgb = cv2.cvtColor(image_input, cv2.COLOR_BGR2RGB)
         st.image(image_rgb, caption=f"Detection Completed. Accuracy: {accuracy:.2f}%", channels="RGB")
-
-        if alert:
-            play_alarm()
 
 # -------------------------- Refresh --------------------------
 if st.button("🔄 Refresh All"):
