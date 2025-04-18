@@ -7,7 +7,7 @@ from PIL import Image
 
 # Load YOLO model
 model_path = "/Users/prabhdeepsingh/Desktop/prabh/Python Files/runs/detect/train/weights/best.pt"
-model = YOLO(model_path)
+model = YOLO("best.pt")
 
 # Initialize pygame alarm
 alarm_path = "/Users/prabhdeepsingh/Desktop/prabh/alarm.mp3"
