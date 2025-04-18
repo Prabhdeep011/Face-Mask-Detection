@@ -2,23 +2,10 @@ import streamlit as st
 import cv2
 import numpy as np
 from ultralytics import YOLO
-import tempfile
 from PIL import Image
 import os
 
-# Title and mode selection
-st.title("😷 Face Mask Detection System")
-mode = st.radio("Choose Detection Mode", ["Live Detection", "Test Image (Upload/Capture)"], horizontal=True)
-
-# Load YOLOv8 model
-model_path = "best.pt"
-try:
-    model = YOLO(model_path)
-except Exception as e:
-    st.error(f"Failed to load YOLO model: {e}")
-    st.stop()
-
-# Alarm function (Cloud-safe)
+# Alarm function
 def play_alarm():
     IS_CLOUD = os.environ.get("STREAMLIT_SERVER_HEADLESS", "1") == "1"
     if not IS_CLOUD:
@@ -36,6 +23,18 @@ def play_alarm():
             audio_file = open("alarm.mp3", "rb")
             audio_bytes = audio_file.read()
             st.audio(audio_bytes, format='audio/mp3')
+
+# Title and mode selection
+st.title("😷 Face Mask Detection System")
+mode = st.radio("Choose Detection Mode", ["Live Detection", "Test Image (Upload/Capture)"], horizontal=True)
+
+# Load YOLOv8 model
+model_path = "best.pt"
+try:
+    model = YOLO(model_path)
+except Exception as e:
+    st.error(f"Failed to load YOLO model: {e}")
+    st.stop()
 
 # -------------------------- Live Detection --------------------------
 if mode == "Live Detection":
@@ -84,7 +83,6 @@ if mode == "Live Detection":
             if alert and alarm_toggle:
                 play_alarm()
 
-            # Show message
             cv2.putText(frame, "Please wear a mask and stay safe!", (10, frame.shape[0] - 20),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
 
@@ -95,19 +93,12 @@ if mode == "Live Detection":
                 break
 
         cap.release()
-        try:
-            import pygame
-            pygame.mixer.music.stop()
-            pygame.mixer.quit()
-        except:
-            pass
         st.success("Live detection stopped.")
 
 # ---------------------- Image Test / Upload -----------------------
 elif mode == "Test Image (Upload/Capture)":
     st.subheader("📸 Upload or Capture an Image")
 
-    # Image upload or capture options
     uploaded_image = st.file_uploader("Upload an Image", type=["jpg", "jpeg", "png"])
     capture = st.button("📷 Open Webcam to Capture")
 
@@ -126,7 +117,6 @@ elif mode == "Test Image (Upload/Capture)":
         else:
             st.error("Failed to capture from webcam.")
 
-    # Process the image
     image_input = None
     if uploaded_image:
         image_input = Image.open(uploaded_image)
