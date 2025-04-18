@@ -152,3 +152,38 @@ elif mode == "Test Image (Upload/Capture)":
 # -------------------------- Refresh --------------------------
 if st.button("🔄 Refresh All"):
     st.rerun()
+
+
+
+
+
+
+
+
+
+import streamlit as st
+import pygame
+import os
+
+def play_alarm():
+    IS_CLOUD = os.environ.get("STREAMLIT_SERVER_HEADLESS", "1") == "1"
+
+    if not IS_CLOUD:
+        try:
+            pygame.mixer.init()
+            pygame.mixer.music.load("alarm.mp3")  # Alarm file should be in the same directory
+            pygame.mixer.music.play()
+        except Exception as e:
+            st.warning(f"Audio playback error: {e}")
+    else:
+        # Cloud fallback: show visible alert and manual audio player
+        st.warning("🚨 Person without mask detected!")
+        with st.expander("🔊 Play alarm manually"):
+            audio_file = open("alarm.mp3", "rb")
+            audio_bytes = audio_file.read()
+            st.audio(audio_bytes, format='audio/mp3')
+
+# Assume `detected_class` comes from YOLO model inference
+if detected_class == "without_mask":
+    play_alarm()
+
