@@ -3,3 +3,4 @@ opencv-python-headless==4.9.0.80
 ultralytics
 pygame
 numpy==1.26.4
+dill
