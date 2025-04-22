@@ -5,7 +5,7 @@ from ultralytics import YOLO
 from PIL import Image
 
 # Load YOLO model
-model_path = "/Users/prabhdeepsingh/Desktop/prabh/Python Files/runs/detect/train/weights/best.pt"
+model_path = "best.pt"
 model = YOLO(model_path)
 
 # Page configuration
