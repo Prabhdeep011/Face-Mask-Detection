@@ -24,7 +24,7 @@ with st.sidebar:
 
 # Display About details when checkbox is checked
 if show_about:
-    st.markdown("## 📖 Project Details")
+    st.markdown("## 📖Details")
     st.markdown(
         """
         **Face Mask Detection System** is a machine learning model built to detect whether individuals are wearing face masks or not using computer vision techniques.
