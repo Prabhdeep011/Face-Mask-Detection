@@ -1,7 +1,6 @@
-streamlit
-dill
 ultralytics
-opencv-python-headless
+opencv-python
+pywebio
 pygame
-numpy
-
+Pillow
+dill  # Add this to resolve the 'dill' issue
