@@ -4,3 +4,4 @@ ultralytics
 pygame
 numpy==1.26.4
 dill
+pip install torch==1.9.0
