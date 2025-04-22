@@ -1,6 +1,8 @@
-streamlit
-ultralytics
-opencv-python
-pygame
-numpy
-dill
+torch==2.0.1
+ultralytics==8.0.31
+opencv-python==4.5.5.64
+pygame==2.1.3
+Pillow==8.4.0
+streamlit==1.16.0
+dill==0.4.0
+numpy==1.21.4
