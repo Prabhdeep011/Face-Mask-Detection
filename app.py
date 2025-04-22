@@ -4,7 +4,7 @@ import numpy as np
 from ultralytics import YOLO
 from PIL import Image
 
-# Load YOLO model
+# Load YOLOv8 model
 model_path = "best.pt"
 model = YOLO(model_path)
 
@@ -26,12 +26,12 @@ with st.sidebar:
         **Face Mask Detection System** is a machine learning model built to detect whether individuals are wearing face masks or not using computer vision techniques.
 
         **Technology Stack:**
-        - **Model:** YOLOv5 (Ultralytics)
+        - **Model:** YOLOv8 (Ultralytics)
         - **Framework:** Streamlit
         - **Libraries:** OpenCV, NumPy, PIL
 
         **How it works:**
-        - This app uses a pre-trained YOLOv5 model to detect faces in images. 
+        - This app uses a pre-trained YOLOv8 model to detect faces in images. 
         - The model classifies each face as either **Masked** or **No Mask**.
         - It provides an interactive UI for testing with image uploads and visualizes detection results.
 
