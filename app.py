@@ -19,11 +19,11 @@ with st.sidebar:
     mode = st.radio("🎯 Choose Mode", ["Test Image (Upload / Capture)"])
     st.markdown("---")
 
-    # About button
-    about_button = st.button("📖 About")
+    # About section toggle
+    show_about = st.checkbox("📖 About", value=False)
 
-# Display About details when button is clicked
-if about_button:
+# Display About details when checkbox is checked
+if show_about:
     st.markdown("## 📖 Project Details")
     st.markdown(
         """
