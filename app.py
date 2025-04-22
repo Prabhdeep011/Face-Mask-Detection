@@ -29,31 +29,22 @@ if mode == "Test Image (Upload / Capture)":
         uploaded = st.file_uploader("📁 Upload an Image", type=["jpg", "jpeg", "png"])
 
     if uploaded:
-        try:
-            image = Image.open(uploaded)
-            frame = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-            results = model(frame, verbose=False)
-            annotated = results[0].plot()
+        image = Image.open(uploaded)
+        frame = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+        results = model(frame, verbose=False)
+        annotated = results[0].plot()
 
-            # Accuracy breakdown
-            mask_count = sum(1 for c in results[0].boxes.cls if int(c) == 0)
-            no_mask_count = sum(1 for c in results[0].boxes.cls if int(c) == 1)
-            total = mask_count + no_mask_count
+        # Count for mask/no mask faces
+        mask_count = sum(1 for c in results[0].boxes.cls if int(c) == 0)
+        no_mask_count = sum(1 for c in results[0].boxes.cls if int(c) == 1)
+        total = mask_count + no_mask_count
 
-            if total > 0:
-                accuracy = (mask_count / total) * 100
-                st.success(f"✅ **Masked Faces**: {mask_count}, ❌ **No Mask Faces**: {no_mask_count}, 🎯 **Accuracy**: {accuracy:.2f}%")
-            else:
-                st.warning("No faces detected in the image.")
+        if total > 0:
+            accuracy = (mask_count / total) * 100
+            st.success(f"✅ Masked Faces: {mask_count}, ❌ No Mask Faces: {no_mask_count}, 🎯 Accuracy: {accuracy:.2f}%")
+        else:
+            st.warning("No faces detected in the image.")
 
-            # Displaying the result
-            st.image(rgb_result, channels="RGB", caption="🧠 Detection Result", use_column_width=True)
-            
-            # Display detected face count
-            st.info(f"Total Faces Detected: {total}")
+        rgb_result = cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB)
+        st.image(rgb_result, channels="RGB", caption="🧠 Detection Result", use_column_width=True)
 
-        except Exception as e:
-            st.error(f"⚠️ Error processing image: {e}")
-
-    else:
-        st.info("Please upload an image to begin detection.")
