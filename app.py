@@ -13,13 +13,17 @@ st.set_page_config(page_title="😷 Mask Detection App", layout="centered", page
 st.markdown("<h1 style='text-align: center;'>😷 Face Mask Detection System</h1>", unsafe_allow_html=True)
 st.markdown("<hr>", unsafe_allow_html=True)
 
-# Sidebar settings with project details
+# Sidebar settings
 with st.sidebar:
     st.markdown("## 🛠️ Settings")
     mode = st.radio("🎯 Choose Mode", ["Test Image (Upload / Capture)"])
     st.markdown("---")
 
-    # Project details
+    # About button
+    about_button = st.button("📖 About")
+
+# Display About details when button is clicked
+if about_button:
     st.markdown("## 📖 Project Details")
     st.markdown(
         """
