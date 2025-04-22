@@ -18,7 +18,6 @@ with st.sidebar:
     st.markdown("## 🛠️ Settings")
     mode = st.radio("🎯 Choose Mode", ["Test Image (Upload / Capture)"])
     st.markdown("---")
-    st.markdown("Made with ❤️ by **Prabh**")
 
 # Test Image Mode
 if mode == "Test Image (Upload / Capture)":
@@ -41,10 +40,10 @@ if mode == "Test Image (Upload / Capture)":
 
         if total > 0:
             accuracy = (mask_count / total) * 100
-            st.success(f"✅ Masked Faces: {mask_count}, ❌ No Mask Faces: {no_mask_count}, 🎯 Accuracy: {accuracy:.2f}%")
+            st.success(f"✅ Masked Faces: {mask_count}, ❌ No Mask Faces: {no_mask_count}")
         else:
             st.warning("No faces detected in the image.")
 
         rgb_result = cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB)
-        st.image(rgb_result, channels="RGB", caption="🧠 Detection Result", use_column_width=True)
+        st.image(rgb_result, channels="RGB", caption="🧠 Detection Result", use_container_width=True)
 
