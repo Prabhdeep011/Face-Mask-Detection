@@ -13,10 +13,32 @@ st.set_page_config(page_title="😷 Mask Detection App", layout="centered", page
 st.markdown("<h1 style='text-align: center;'>😷 Face Mask Detection System</h1>", unsafe_allow_html=True)
 st.markdown("<hr>", unsafe_allow_html=True)
 
-# Sidebar settings
+# Sidebar settings with project details
 with st.sidebar:
     st.markdown("## 🛠️ Settings")
     mode = st.radio("🎯 Choose Mode", ["Test Image (Upload / Capture)"])
+    st.markdown("---")
+
+    # Project details
+    st.markdown("## 📖 Project Details")
+    st.markdown(
+        """
+        **Face Mask Detection System** is a machine learning model built to detect whether individuals are wearing face masks or not using computer vision techniques.
+
+        **Technology Stack:**
+        - **Model:** YOLOv5 (Ultralytics)
+        - **Framework:** Streamlit
+        - **Libraries:** OpenCV, NumPy, PIL
+
+        **How it works:**
+        - This app uses a pre-trained YOLOv5 model to detect faces in images. 
+        - The model classifies each face as either **Masked** or **No Mask**.
+        - It provides an interactive UI for testing with image uploads and visualizes detection results.
+
+        **Purpose:**
+        - This tool helps in monitoring mask usage for safety purposes, especially in public settings.
+        """
+    )
     st.markdown("---")
 
 # Test Image Mode
@@ -46,4 +68,3 @@ if mode == "Test Image (Upload / Capture)":
 
         rgb_result = cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB)
         st.image(rgb_result, channels="RGB", caption="🧠 Detection Result", use_container_width=True)
-
