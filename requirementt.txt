@@ -1,6 +1,7 @@
 streamlit
+dill
 ultralytics
 opencv-python-headless
 pygame
 numpy
-dill
+
