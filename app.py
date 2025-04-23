@@ -5,8 +5,7 @@ from ultralytics import YOLO
 from PIL import Image
 
 # Load YOLOv8 model
-model_path = "best.pt"
-model = YOLO(model_path)
+model = YOLO("best.pt")
 
 # Page configuration
 st.set_page_config(page_title="😷 Mask Detection App", layout="centered", page_icon="😷")
