@@ -51,8 +51,10 @@ if mode == "Test Image (Upload / Capture)":
 
     if run_detection:
         if uploaded is not None:
+            # Correct way to prepare image
             image = Image.open(uploaded).convert('RGB')
             frame = np.array(image)
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)  # Very Important: Convert to BGR
 
             with st.spinner("🔎 Detecting... Please wait..."):
                 results = model(frame, verbose=False)
