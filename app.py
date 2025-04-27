@@ -1,8 +1,13 @@
 import streamlit as st
 import cv2
 import numpy as np
+import torch
 from ultralytics import YOLO
 from PIL import Image
+
+# Check if numpy and torch are available
+assert np.__version__, "Numpy is not available."
+assert torch.__version__, "Torch is not available."
 
 # Load YOLOv8 model
 model_path = "best.pt"
@@ -20,54 +25,49 @@ with st.sidebar:
     st.markdown("---")
     show_about = st.checkbox("📖 About", value=False)
 
-# Display About section
+# About section
 if show_about:
-    st.markdown("## 📖 Details")
+    st.markdown("## 📖 About")
     st.markdown(
         """
-        **Face Mask Detection System** is a machine learning model built to detect whether individuals are wearing face masks or not using computer vision techniques.
+        **Face Mask Detection System** identifies whether people are wearing masks using deep learning.
 
         **Technology Stack:**
         - **Model:** YOLOv8 (Ultralytics)
         - **Framework:** Streamlit
-        - **Libraries:** OpenCV, NumPy, PIL
+        - **Libraries:** OpenCV, NumPy, PIL, PyTorch
 
-        **How it works:**
-        - This app uses a pre-trained YOLOv8 model to detect faces in images. 
-        - The model classifies each face as either **Masked** or **No Mask**.
-        - It provides an interactive UI for testing with image uploads and visualizes detection results.
-
-        **Purpose:**
-        - This tool helps in monitoring mask usage for safety purposes, especially in public settings.
+        **Workflow:**
+        1. Upload or capture an image.
+        2. The YOLOv8 model detects faces and classifies them as "Masked" or "No Mask".
+        3. Results are displayed with bounding boxes.
         """
     )
     st.markdown("---")
 
-# Test Image Mode
+# Main Image Testing
 if mode == "Test Image (Upload / Capture)":
     st.subheader("📸 Test with Image")
 
-    col1, col2 = st.columns(2)
-    with col1:
-        uploaded = st.file_uploader("📁 Upload an Image", type=["jpg", "jpeg", "png"])
+    uploaded = st.file_uploader("📁 Upload an Image", type=["jpg", "jpeg", "png"])
 
     if uploaded:
-        image = Image.open(uploaded)
-        frame = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+        image = Image.open(uploaded).convert('RGB')
+        frame = np.array(image)
 
         with st.spinner("🔎 Detecting... Please wait..."):
             results = model(frame, verbose=False)
             annotated = results[0].plot()
 
-            # Count for mask/no mask faces
-            mask_count = sum(1 for c in results[0].boxes.cls if int(c) == 0)
-            no_mask_count = sum(1 for c in results[0].boxes.cls if int(c) == 1)
-            total = mask_count + no_mask_count
+        # Count masks and no masks
+        classes = results[0].boxes.cls.tolist()
+        mask_count = sum(1 for c in classes if int(c) == 0)
+        no_mask_count = sum(1 for c in classes if int(c) == 1)
+        total = mask_count + no_mask_count
 
         if total > 0:
             st.success(f"✅ Masked Faces: {mask_count} | ❌ No Mask Faces: {no_mask_count}")
         else:
-            st.warning("⚠️ No faces detected in the image.")
+            st.warning("⚠️ No faces detected.")
 
-        rgb_result = cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB)
-        st.image(rgb_result, channels="RGB", caption="🧠 Detection Result", use_container_width=True)
+        st.image(annotated, caption="🧠 Detection Result", use_container_width=True)
