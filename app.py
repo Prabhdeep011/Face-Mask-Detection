@@ -18,13 +18,11 @@ with st.sidebar:
     st.markdown("## 🛠️ Settings")
     mode = st.radio("🎯 Choose Mode", ["Test Image (Upload / Capture)"])
     st.markdown("---")
-
-    # About section toggle
     show_about = st.checkbox("📖 About", value=False)
 
-# Display About details when checkbox is checked
+# Display About section
 if show_about:
-    st.markdown("## 📖Details")
+    st.markdown("## 📖 Details")
     st.markdown(
         """
         **Face Mask Detection System** is a machine learning model built to detect whether individuals are wearing face masks or not using computer vision techniques.
@@ -56,19 +54,20 @@ if mode == "Test Image (Upload / Capture)":
     if uploaded:
         image = Image.open(uploaded)
         frame = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-        results = model(frame, verbose=False)
-        annotated = results[0].plot()
 
-        # Count for mask/no mask faces
-        mask_count = sum(1 for c in results[0].boxes.cls if int(c) == 0)
-        no_mask_count = sum(1 for c in results[0].boxes.cls if int(c) == 1)
-        total = mask_count + no_mask_count
+        with st.spinner("🔎 Detecting... Please wait..."):
+            results = model(frame, verbose=False)
+            annotated = results[0].plot()
+
+            # Count for mask/no mask faces
+            mask_count = sum(1 for c in results[0].boxes.cls if int(c) == 0)
+            no_mask_count = sum(1 for c in results[0].boxes.cls if int(c) == 1)
+            total = mask_count + no_mask_count
 
         if total > 0:
-            accuracy = (mask_count / total) * 100
             st.success(f"✅ Masked Faces: {mask_count}, ❌ No Mask Faces: {no_mask_count}")
         else:
-            st.warning("No faces detected in the image.")
+            st.warning("⚠️ No faces detected in the image.")
 
         rgb_result = cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB)
         st.image(rgb_result, channels="RGB", caption="🧠 Detection Result", use_container_width=True)
