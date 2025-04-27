@@ -65,7 +65,7 @@ if mode == "Test Image (Upload / Capture)":
             total = mask_count + no_mask_count
 
         if total > 0:
-            st.success(f"✅ Masked Faces: {mask_count}, ❌ No Mask Faces: {no_mask_count}")
+            st.success(f"✅ Masked Faces: {mask_count} | ❌ No Mask Faces: {no_mask_count}")
         else:
             st.warning("⚠️ No faces detected in the image.")
 
