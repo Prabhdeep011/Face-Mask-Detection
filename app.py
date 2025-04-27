@@ -1,13 +1,8 @@
 import streamlit as st
 import cv2
 import numpy as np
-import torch
 from ultralytics import YOLO
 from PIL import Image
-
-# Check if numpy and torch are available
-assert np.__version__, "Numpy is not available."
-assert torch.__version__, "Torch is not available."
 
 # Load YOLOv8 model
 model_path = "best.pt"
@@ -35,12 +30,13 @@ if show_about:
         **Technology Stack:**
         - **Model:** YOLOv8 (Ultralytics)
         - **Framework:** Streamlit
-        - **Libraries:** OpenCV, NumPy, PIL, PyTorch
+        - **Libraries:** OpenCV, NumPy, PIL
 
         **Workflow:**
         1. Upload or capture an image.
-        2. The YOLOv8 model detects faces and classifies them as "Masked" or "No Mask".
-        3. Results are displayed with bounding boxes.
+        2. Click "Run Detection".
+        3. The YOLOv8 model detects faces and classifies them as "Masked" or "No Mask".
+        4. Results are displayed with bounding boxes.
         """
     )
     st.markdown("---")
@@ -51,23 +47,28 @@ if mode == "Test Image (Upload / Capture)":
 
     uploaded = st.file_uploader("📁 Upload an Image", type=["jpg", "jpeg", "png"])
 
-    if uploaded:
-        image = Image.open(uploaded).convert('RGB')
-        frame = np.array(image)
+    run_detection = st.button("🚀 Run Detection")
 
-        with st.spinner("🔎 Detecting... Please wait..."):
-            results = model(frame, verbose=False)
-            annotated = results[0].plot()
+    if run_detection:
+        if uploaded is not None:
+            image = Image.open(uploaded).convert('RGB')
+            frame = np.array(image)
 
-        # Count masks and no masks
-        classes = results[0].boxes.cls.tolist()
-        mask_count = sum(1 for c in classes if int(c) == 0)
-        no_mask_count = sum(1 for c in classes if int(c) == 1)
-        total = mask_count + no_mask_count
+            with st.spinner("🔎 Detecting... Please wait..."):
+                results = model(frame, verbose=False)
+                annotated = results[0].plot()
 
-        if total > 0:
-            st.success(f"✅ Masked Faces: {mask_count} | ❌ No Mask Faces: {no_mask_count}")
+            # Count masks and no masks
+            classes = results[0].boxes.cls.tolist()
+            mask_count = sum(1 for c in classes if int(c) == 0)
+            no_mask_count = sum(1 for c in classes if int(c) == 1)
+            total = mask_count + no_mask_count
+
+            if total > 0:
+                st.success(f"✅ Masked Faces: {mask_count} | ❌ No Mask Faces: {no_mask_count}")
+            else:
+                st.warning("⚠️ No faces detected.")
+
+            st.image(annotated, caption="🧠 Detection Result", use_container_width=True)
         else:
-            st.warning("⚠️ No faces detected.")
-
-        st.image(annotated, caption="🧠 Detection Result", use_container_width=True)
+            st.error("⚠️ Please upload an image before running detection.")
