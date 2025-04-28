@@ -26,5 +26,4 @@ While the app works well locally, deploying it on cloud platforms such as **Stre
 
 
 
-here's the link:
-https://face-mask-detection-ew4o89jpyffupwkmnjsjp7.streamlit.app/
+[Open Face Mask Detector App](https://face-mask-detection-ew4o89jpyffupwkmnjsjp7.streamlit.app/)
